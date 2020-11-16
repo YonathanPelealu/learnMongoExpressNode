@@ -1,13 +1,29 @@
 require('dotenv').config()
 const express = require('express');
 const app = express();
-const {MongoClient} = require('mongodb');
-const uri = process.env.MONGODB_API_URL
-const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true })
+const {router} = require('./routes/index')
+const mongoose = require("mongoose");
 
-const connect = client.connect() ? console.log('succesfully connected to database') : console.log(err)
- 
-const PORT = process.env.PORT || 5050
-app.listen(5050, () => {
+const mongoURI = process.env.MONGOURI;
+mongoose.Promise = global.Promise;
+const options = {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+  useFindAndModify: false,
+};
+mongoose.connect(mongoURI, options);
+
+const db = mongoose.connection;
+db.on("error", console.error.bind(console, "Connection Error"));
+db.once("open", () => console.log("Connected to mongodb!"));
+
+
+app.use(express.json());
+app.use(express.urlencoded({ extended: false}));
+
+const PORT = Number(process.env.PORT) || 3000
+app.use(router)
+
+app.listen(PORT, () => {
     console.log((`Running on Port ${PORT}`));
 })
