@@ -27,4 +27,7 @@ exports.createUser = async (req,res,next)=>{
     } catch (err) {
         next(err)
     }
+    exports.getIp = (req,res,next) => {
+        console.log(req.body)
+    };
 }
